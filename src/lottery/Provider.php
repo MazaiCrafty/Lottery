@@ -15,12 +15,12 @@ class Provider{
         //$this->getMain()->saveResource("messages.yml");
         //$this->getMain()->saveResource("config.yml");
         $this->messages = new Config($this->getMain()->getDataFolder() . "messages.yml", Config::YAML, [
-"entry" => [
-"1s" => "10:100",
-"2s" => "20:90",
-"hazure" => "70:20"
-]
-]);       
+            "entry" => [
+                "1等" => "10:100",
+                "2等" => "20:90",
+                "ハズレ" => "70:20"
+            ]
+        ]);       
         $this->conf = new Config($this->getMain()->getDataFolder() . "config.yml", Config::YAML);
     }
 
