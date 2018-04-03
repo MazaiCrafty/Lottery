@@ -1,0 +1,10 @@
+name: Lottery
+main: lottery\Main
+api:
+ - 3.0.0-ALPHA11
+ - 3.0.0-ALPHA12
+version: 1.0
+author: MazaiCrafty
+website: https://github.com/MazaiCrafty/
+depend: [EconomyAPI]
+load: POSTWORLD
