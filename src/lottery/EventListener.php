@@ -7,6 +7,10 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use lottery\Main;
+use pocketmine\level\Level;
+use pocketmine\block\Block;
+use pocketmine\math\Vector3;
+use pocketmine\level\sound\PopSound;
 
 class EventListener implements Listener{
 
@@ -19,10 +23,18 @@ class EventListener implements Listener{
 
     public function onInteract(PlayerInteractEvent $event): void{
         $player = $event->getPlayer();
+        $level = $player->getLevel();
+        $x = $player->getX();
+        $y = $player->getY();
+        $z = $player->getZ();
+        $pos = new Vector3($x, $y, $z);
+        $pop = new PopSound($pos);
 
         if ($event->getBlock()->getId() == $this->getMain()->getProvider()->getSetting("block")){
             $set_money = $this->getMain()->getProvider()->getSetting("money");
             if ($set_money <= $this->getMain()->getEconomy()->myMoney($player)){
+                $player->sendMessage("～待機させる演出～");
+                sleep(2);
                 $this->getMain()->getEconomy()->reduceMoney($player, $set_money);
                 //$entries = $this->getMain()->getProvider()->getSetting("entry");
                 // $result_key = $entries[$this->lottery($entries)]["name"];
@@ -37,19 +49,23 @@ class EventListener implements Listener{
                     // Entryを増やしたら、caseを増やすこと
                     // 増やさなければdefaultで分岐される
                     case "1等":
+                    $level->addSound($pop);
                     $player->sendMessage("一等おめ");
                     $this->getMain()->getEconomy()->addMoney($player, 114514); // (Player, 追加するお金の量)
                     break;
 
                     case "2等":
+                    $level->addSound($pop);
                     $player->sendMessage("二等おめ");
                     break;
 
                     case "3等":
+                    $level->addSound($pop);
                     $player->sendMessage("三等おめ");
                     break;
 
                     case "ハズレ":
+                    $level->addSound($pop);
                     $player->sendMessage("はずれ");
                     break;
 
