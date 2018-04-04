@@ -12,20 +12,22 @@ class Provider{
     public function __construct(Main $main){
         $this->main = $main;
         @mkdir($this->getMain()->getDataFolder());
-        //$this->getMain()->saveResource("messages.yml");
+        $this->getMain()->saveResource("messages.yml");
         //$this->getMain()->saveResource("config.yml");
-        $this->messages = new Config($this->getMain()->getDataFolder() . "messages.yml", Config::YAML, [
-            "entry" => [
-                "1等" => "10:100",
-                "2等" => "20:90",
-                "ハズレ" => "70:20"
-            ]
-        ]);       
-        $this->conf = new Config($this->getMain()->getDataFolder() . "config.yml", Config::YAML);
+        $this->messages = new Config($this->getMain()->getDataFolder() . "messages.yml", Config::YAML);
+        $this->entry = new Config($this->getMain()->getDataFolder() . "entry.yml", Config::YAML);
+        $this->conf = new Config($this->getMain()->getDataFolder() . "config.yml", Config::YAML, [
+            "money" => 100,
+            "block" => 1,
+        ]);
     }
 
     public function getMessage(string $message){
         return $this->messages->get($message);
+    }
+    
+    public function getEntry(string $entry){
+        return $this->entry->get($entry);
     }
 
     public function getSetting(string $setting){

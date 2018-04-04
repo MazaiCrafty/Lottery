@@ -5,6 +5,7 @@ namespace lottery;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
+use pocketmine\Player;
 use lottery\Main;
 
 class EventListener implements Listener{
@@ -18,31 +19,71 @@ class EventListener implements Listener{
 
     public function onInteract(PlayerInteractEvent $event): void{
         $player = $event->getPlayer();
-        $block = $event->getBlock();
 
-        if ($block->getId(); === $this->getMain()->getProvider()->getSetting("block")){
+        if ($event->getBlock()->getId() == $this->getMain()->getProvider()->getSetting("block")){
             $set_money = $this->getMain()->getProvider()->getSetting("money");
             if ($set_money <= $this->getMain()->getEconomy()->myMoney($player)){
-                // 処理
-                $entries = $this->getMain()->getProvider()->getSetting("entry");
-                $result_key = array_rand($entries);
-                var_dump($result_key);
+                $this->getMain()->getEconomy()->reduceMoney($player, $set_money);
+                //$entries = $this->getMain()->getProvider()->getSetting("entry");
+                // $result_key = $entries[$this->lottery($entries)]["name"];
+                $entries = [
+                    "1等" => 10, //確率
+                    "2等" => 20,
+                    "3等" => 30,
+                    "ハズレ" => 40,
+                ];
+                $result_key = $this->array_rand_weighted($entries);
+                switch ($result_key){
+                    // Entryを増やしたら、caseを増やすこと
+                    // 増やさなければdefaultで分岐される
+                    case "1等":
+                    $player->sendMessage("一等おめ");
+                    $this->getMain()->getEconomy()->addMoney($player, 114514); // (Player, 追加するお金の量)
+                    break;
+
+                    case "2等":
+                    $player->sendMessage("二等おめ");
+                    break;
+
+                    case "3等":
+                    $player->sendMessage("三等おめ");
+                    break;
+
+                    case "ハズレ":
+                    $player->sendMessage("はずれ");
+                    break;
+
+                    default:
+                    $player->sendMessage("エラー");
+                    break;
+                }
+                //var_dump($result_key); //デバッグ用の関数
             }
             else{
-                $player->sendMessage($this->getMain()->getProvider()->getMessage("error.no-money"));
-                return;
+                $player->sendMessage("金がない！");
             }
         }
     }
 
-    public function array_rand($entries){
-        $sum = array_sum($entries);
-        $rand = ranf(1, $sum);
-
-        foreach ($entries as $key => $value){
-            if (($sum -= $value) < $rand) return $key;
+    function array_rand_weighted($entries){
+        $sum  = array_sum($entries);
+        $rand = rand(1, $sum);
+        foreach($entries as $key => $weight){
+            if (($sum -= $weight) < $rand) return $key;
         }
     }
+
+/*
+    public function lottery($entries = []){
+        $max = 0;
+        foreach ((array)$entries as $result) $max += $result["rate"];
+        $hit = mt_rand(1, ($max - 1));
+        foreach ($entries as $key => $result){
+            $max -= $result["rate"];
+            if ($max <= $hit) return $key;
+        }
+    }
+*/
 
     public function getMain(): Main{
         return $this->main;
